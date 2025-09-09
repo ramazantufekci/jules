@@ -1,0 +1,36 @@
+name: Deploy Wazuh Rules
+
+on:
+  push:
+    branches:
+      - main   # sadece main branch'e push olduğunda çalışır
+    paths:
+      - rules/**   # sadece rules klasöründeki değişikliklerde çalışır
+  workflow_dispatch: # manuel çalıştırma imkanı
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Copy Wazuh rules to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.WAZUH_SERVER_HOST }}
+          username: ${{ secrets.WAZUH_SERVER_USER }}
+          key: ${{ secrets.WAZUH_SERVER_SSH_KEY }}
+          source: "rules/*"
+          target: "/var/ossec/etc/rules/"
+
+      - name: Restart Wazuh manager
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.WAZUH_SERVER_HOST }}
+          username: ${{ secrets.WAZUH_SERVER_USER }}
+          key: ${{ secrets.WAZUH_SERVER_SSH_KEY }}
+          script: |
+            sudo systemctl restart wazuh-manager
+            sudo systemctl status wazuh-manager --no-pager
