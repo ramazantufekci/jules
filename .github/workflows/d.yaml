@@ -15,8 +15,11 @@ jobs:
       - name: update repo
         run: sudo apt-get update
       - name: Install Wazuh Agent
-        run: curl -sO https://packages.wazuh.com/4.12/wazuh-install.sh \
-sudo chmod 744 wazuh-install.sh
+        run: curl -sO https://packages.wazuh.com/4.12/wazuh-install.sh
+      - name: df
+        run: |
+             sudo chmod 744 wazuh-install.sh \
+             sudo ./wazuh-install.sh -dw deb -da amd64
       - name: Deploy Rules
         run: sudo cp ./rules/*.yaml /var/ossec/etc/rules/
       - name: Restart Wazuh
