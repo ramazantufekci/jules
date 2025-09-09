@@ -1,0 +1,16 @@
+name: Deploy Wazuh Rules
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Wazuh Agent
+        run: sudo apt-get install -y wazuh-agent
+      - name: Deploy Rules
+        run: cp ./rules/*.yaml /var/ossec/etc/rules/
+      - name: Restart Wazuh
+        run: sudo systemctl restart wazuh-manager
