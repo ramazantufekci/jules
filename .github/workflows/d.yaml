@@ -13,7 +13,7 @@ jobs:
       - name: repo add
         run: echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee -a /etc/apt/sources.list.d/wazuh.list
       - name: update repo
-        run: apt-get update
+        run: sudo apt-get update
       - name: Install Wazuh Agent
         run: sudo apt-get install -y wazuh-agent
       - name: Deploy Rules
