@@ -17,6 +17,6 @@ jobs:
       - name: Install Wazuh Agent
         run: sudo apt-get install -y wazuh-agent
       - name: Deploy Rules
-        run: cp ./rules/*.yaml /var/ossec/etc/rules/
+        run: sudo cp ./rules/*.yaml /var/ossec/etc/rules/
       - name: Restart Wazuh
         run: sudo systemctl restart wazuh-manager
