@@ -1,0 +1,83 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "value": 5
+            }
+          ]
+        }
+      },
+      "id": "1",
+      "name": "Every 5 minutes",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=KANAL_ID"
+      },
+      "id": "2",
+      "name": "Read YouTube RSS",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"liveBroadcastContent\"]}}",
+              "operation": "equal",
+              "value2": "live"
+            }
+          ]
+        }
+      },
+      "id": "3",
+      "name": "Is Live?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [750, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{ json: { videoUrl: $json.link } }];"
+      },
+      "id": "4",
+      "name": "Extract Video URL",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1000, 280]
+    },
+    {
+      "parameters": {
+        "command": "=youtube-dl --write-sub --write-auto-sub --sub-lang en,tr --sub-format vtt -o \"/data/youtube/%(title)s.%(ext)s\" {{$json[\"videoUrl\"]}}"
+      },
+      "id": "5",
+      "name": "Download with youtube-dl + Subs",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1250, 280]
+    }
+  ],
+  "connections": {
+    "Every 5 minutes": {
+      "main": [[{ "node": "Read YouTube RSS", "type": "main", "index": 0 }]]
+    },
+    "Read YouTube RSS": {
+      "main": [[{ "node": "Is Live?", "type": "main", "index": 0 }]]
+    },
+    "Is Live?": {
+      "main": [[{ "node": "Extract Video URL", "type": "main", "index": 0 }]]
+    },
+    "Extract Video URL": {
+      "main": [[{ "node": "Download with youtube-dl + Subs", "type": "main", "index": 0 }]]
+    }
+  }
+}
