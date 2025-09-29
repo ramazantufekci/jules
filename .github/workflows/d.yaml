@@ -2,7 +2,7 @@ name: Deploy Wazuh Rules
 on:
   push:
     branches:
-      - main
+      - ramazan
 jobs:
   deploy:
     runs-on: ubuntu-latest
